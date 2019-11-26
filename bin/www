@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+const debug = require('debug')('node');
+const app = require('../app.js');
+
+// START THE SERVER
+const port = app.get('port');
+
+app.listen(port, function() {
+  debug(`Server is running on port: ${port} \nURL: localhost:${port}/`);
+  console.log(`Server is running on port: ${port} \nURL: localhost:${port}/`);
+});
