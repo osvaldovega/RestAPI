@@ -1,26 +1,38 @@
 {
-  "name": "lindera",
+  "name": "Lindera",
   "version": "1.0.0",
-  "description": "CRUD API for patients",
+  "description": "REST API for Lindera Patients",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "eslint": "eslint .",
+    "tests": "jest ."
   },
   "keywords": [
     "api",
     "crud"
   ],
-  "author": "Osvaldo Vega",
+  "author": {
+    "name": "Osvaldo Vega",
+    "email": "osvaldo_vegajr@hotmail.com",
+    "url": "git@github.com:osvaldovega/RestAPI.git"
+  },
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^16.1.8",
     "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.7.12",
-    "nodemon": "^2.0.1"
+    "nodemon": "^2.0.1",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.3.0"
   },
   "devDependencies": {
-    "debug": "^4.1.1"
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "jest": "^24.9.0"
   }
 }
