@@ -62,8 +62,11 @@ const service = (serverName) => {
     }),
 
     setupMongoDB: () => new Promise((resolve, reject) => {
+      const DB_URL = process.env.DB_CONNECTION_TYPE === 'aws'
+        ? process.env.DB_CONNECTION
+        : `${process.env.DB_TYPE}://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SCHEMA}`;
       mongoose.connect(
-        process.env.DB_CONNECTION,
+        DB_URL,
         {
           useUnifiedTopology: true,
           useNewUrlParser: true
@@ -132,7 +135,7 @@ const service = (serverName) => {
 
       this.express = app;
       this.log.info(`${serverName}: Express Initialized.`);
-      resolve();
+      resolve(app);
     }),
 
     createService: () => new Promise((resolve, reject) => {

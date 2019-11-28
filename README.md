@@ -35,6 +35,12 @@ This is a simple REST API application that use MongoDB as storage, for execute H
   
 NOTE: you can go to the ./envs directory and copy the  settings from one of the files and create a new .env file in root and paste  the configuraction, this is necessary for the application run.
 
+NOTE: You have to options for mongoDB connection, the first one is install mongoDB locally, create an user  and then use those credentials for the set the .env file for DB connection, or you can use the default that I set in the project that is hosted by AWS, in both cases that application should connect properly.
+The vairable for set this is DB_CONNECTION_TYPE and you can set "aws" for use mongoDB in AWS or "local" for a mongoDB installed locally
+
+##### TODO
+* Make a function for data validation (patients)
+* Include more coverage for testing (WIP)
 
 #### Author
 

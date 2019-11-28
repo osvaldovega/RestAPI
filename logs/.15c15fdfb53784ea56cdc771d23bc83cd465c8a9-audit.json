@@ -1,0 +1,14 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/ovega/Desktop/RestAPI/logs/.15c15fdfb53784ea56cdc771d23bc83cd465c8a9-audit.json",
+    "files": [
+        {
+            "date": 1574941242537,
+            "name": "/Users/ovega/Desktop/RestAPI/logs/LinderaServer-2019-11-28-12.log",
+            "hash": "5e711d39857b63476c735d00e9b95fce"
+        }
+    ]
+}
