@@ -1,8 +1,10 @@
+const dotenv = require('dotenv');
 const app = require('../app');
 
-const setup = async () => {
-  const service = app('LinderaServer');
+dotenv.config();
 
+const setup = async () => {
+  const service = app();
   try {
     await service.setupLogger();
     await service.validateEnvironment();
