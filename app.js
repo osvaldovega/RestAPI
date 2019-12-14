@@ -1,63 +1,32 @@
-const path = require('path');
 const os = require('os');
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const winston = require('winston');
-const DailyRotateFile = require('winston-daily-rotate-file');
-const dotenv = require('dotenv');
 const routes = require('./routes');
+const logger = require('./utils/logger');
+const environmentVariables = require('./utils/variablesValidation');
 
-dotenv.config();
-
-const service = (serverName) => {
+const service = () => {
   let numberOfReceivedRequests = 0;
 
   return {
     setupLogger: () => new Promise((resolve) => {
-      this.log = winston.createLogger({
-        level: 'debug',
-        transports: [
-          new winston.transports.Console(),
-          new DailyRotateFile({
-            handleExceptions: false,
-            json: false,
-            level: 'debug',
-            filename: path.join(__dirname, '/logs/', `${serverName}-%DATE%.log`),
-            datePattern: 'YYYY-MM-DD-HH',
-            timestamp: true,
-            maxSize: '20m',
-            maxFiles: '14d'
-          })
-        ],
-        exitOnError: false
-      });
-      this.log.info(`${serverName}: Logger Initialized.`);
+      this.log = logger.init();
+      this.log.info('Logger process initialized.');
       resolve(this.log);
     }),
 
     validateEnvironment: () => new Promise((resolve, reject) => {
-      const requiredEnvironmentVariables = [
-        'DB_HOST',
-        'DB_PORT',
-        'DB_USER',
-        'DB_PASS',
-        'DB_SCHEMA',
-        'NODE_ENV',
-        'SERVICE_NAME',
-        'PORT'
-      ];
+      this.log.info('Validate environment variables for service.');
+      const onSuccess = environmentVariables.validate(this.log);
 
-      const environmentKeys = Object.keys(process.env);
+      if (!onSuccess) {
+        this.log.error('One or more environment variables are not set');
+        return reject();
+      }
 
-      requiredEnvironmentVariables.forEach((variable) => {
-        if (environmentKeys.indexOf(variable) === -1) {
-          this.log.error(`${serverName}: Service misconfiguration, missing environment variable ${variable}`);
-          reject();
-        }
-      });
-      this.log.info(`${serverName}: Environment variables set.`);
+      this.log.info('All environment variables were found and set');
       resolve();
     }),
 
@@ -73,12 +42,12 @@ const service = (serverName) => {
         }
       )
         .then(() => {
-          this.log.info(`${serverName}: DB Connection Initialized.`);
+          this.log.info('DB Connection Initialized.');
           resolve();
         })
         .catch((error) => {
-          this.log.error(`${serverName}: DB Connection Failed.`);
-          this.log.error(`${serverName}: ${error}`);
+          this.log.error('DB Connection Failed.');
+          this.log.error(`${error}`);
           reject(error);
         });
     }),
@@ -108,7 +77,7 @@ const service = (serverName) => {
 
       app.use((req, res, next) => {
         numberOfReceivedRequests += 1;
-        this.log.info(`${serverName}: got request from: ${req.ip} route: '${req.originalUrl}' params: ${JSON.stringify(req.params)}`);
+        this.log.info(`got request from: ${req.ip} route: '${req.originalUrl}' params: ${JSON.stringify(req.params)}`);
         res.set('Content-Type', 'application/json');
         next();
       });
@@ -134,31 +103,31 @@ const service = (serverName) => {
       app.set('port', process.env.PORT);
 
       this.express = app;
-      this.log.info(`${serverName}: Express Initialized.`);
+      this.log.info('Express Initialized.');
       resolve(app);
     }),
 
     createService: () => new Promise((resolve, reject) => {
       this.server = http.createServer(this.express);
       try {
-        this.log.info(`${serverName}: Server Initialized`);
+        this.log.info('Server Initialized');
         resolve(this);
       }
       catch (error) {
-        this.log.info(`${serverName}: Server Creation Failed`);
+        this.log.info('Server Creation Failed');
         reject(error);
       }
     }),
 
     startService: () => {
       this.server.listen(this.express.get('port'));
-      this.log.info(`${serverName}: Server is Up and Running`);
+      this.log.info('Server is Up and Running');
       return Promise.resolve('Server Started');
     },
 
     stopService: () => {
       this.server.close();
-      this.log.info(`${serverName}: Server Stopped`);
+      this.log.info('Server Stopped');
       return Promise.resolve('Server Stopped');
     }
   };
