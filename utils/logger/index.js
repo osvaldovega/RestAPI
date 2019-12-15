@@ -37,6 +37,13 @@ const init = () => {
     ]
   });
 
+  if (logger) {
+    logger.info('Logger initialization SUCCESS.');
+  }
+  else {
+    throw new Error('Logger initialization FAIL.');
+  }
+
   return logger;
 };
 
