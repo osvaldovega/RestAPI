@@ -1,20 +1,22 @@
 const mongoose = require('mongoose');
 
-const PatientsSchema = mongoose.Schema({
-  firstName: {
+const UsersSchema = mongoose.Schema({
+  username: {
     type: String,
-    min: 2,
+    min: 3,
     max: 15,
     required: true
   },
-  lastName: {
+  email: {
     type: String,
-    min: 2,
+    min: 6,
     max: 15,
+    unique: true,
     required: true
   },
-  birthday: {
+  password: {
     type: String,
+    min: 6,
     required: true
   },
   date: {
@@ -23,4 +25,4 @@ const PatientsSchema = mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Patients', PatientsSchema);
+module.exports = mongoose.model('Users', UsersSchema);

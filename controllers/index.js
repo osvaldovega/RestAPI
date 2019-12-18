@@ -1,5 +1,5 @@
-const PatientController = require('./patientsController');
+const UserController = require('./usersController');
 
 module.exports = {
-  patients: PatientController
+  users: UserController
 };

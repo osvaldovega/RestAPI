@@ -1,63 +1,51 @@
-const os = require('os');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const routes = require('../../routes');
-
-let numberOfReceivedRequests = 0;
+const middlewares = require('./middlewares');
 
 const init = (logger) => {
   logger.info('Setting express API.');
   const app = express();
 
+  // CONTENT SECURITY POLICY
+  logger.info('Setting API security policy.');
+  app.use(helmet());
+  app.use(xss()); // data sanitazion against XSS attacks
+  app.use(mongoSanitize()); // data sanitazion against NoSQL injction attacks
+
+
+  // ALLOW CROSS DOMAIN
+  logger.info('Setting API cross domain.');
+  app.use(cors());
+
+
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
-  app.disable('x-powered-by');
+  app.use(express.json({ limit: '10kb' })); // Body limit is 10
 
-  logger.info('Setting API cross domain.');
-  // ALLOW CROSS DOMAIN
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-  });
 
-  logger.info('Setting API security policy.');
-  // CONTENT SECURITY POLICY
-  app.use((req, res, next) => {
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    next();
-  });
-
+  // MIDDLEWARE COUNTER OF REQUESTS
   logger.info('Setting API middleware.');
-  app.use((req, res, next) => {
-    numberOfReceivedRequests += 1;
-    logger.info(`got request from: ${req.ip} route: '${req.originalUrl}' params: ${JSON.stringify(req.params)}`);
-    res.set('Content-Type', 'application/json');
-    next();
-  });
+  app.use(middlewares.counterRequests(logger));
 
-  logger.info('Setting API health route.');
+
   // HEATLH (API STATUS)
-  app.get('/health', (req, res) => {
-    res.status(200).json({
-      upTime: process.uptime(),
-      numberOfReceivedRequests,
-      osFreeMem: os.freemem(),
-      serviceMemoryUsage: process.memoryUsage()
-    });
-  });
+  logger.info('Setting API health route.');
+  app.get('/health', middlewares.limitAmountOfRequest, middlewares.health);
 
-  logger.info('Setting API routes.');
+
   // ROUTES FOR PATIENTS
+  logger.info('Setting API routes.');
   app.use('/api/v1', routes);
 
+
   // HANDLE UNKNOW ROUTES
-  app.use((req, res) => {
-    res.status(404).json({ info: 'Resource not found.' });
-  });
+  app.use('*', middlewares.undefinedRoutet);
+
 
   app.set('port', process.env.PORT);
   logger.info(`Express service running on port ${process.env.PORT}`);
