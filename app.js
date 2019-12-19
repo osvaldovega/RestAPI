@@ -1,8 +1,8 @@
 const http = require('http');
 const logger = require('./utils/logger');
 const environmentVariables = require('./utils/variablesValidation');
-const dataBase = require('./utils/database');
-const api = require('./utils/api');
+const dataBase = require('./src/database');
+const api = require('./src/api');
 
 const service = () => {
   this.log = null;

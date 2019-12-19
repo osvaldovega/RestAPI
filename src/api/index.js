@@ -4,7 +4,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
-const routes = require('../../routes');
+const routes = require('./routes');
+const loginRoute = require('./routes/login');
 const middlewares = require('./middlewares');
 
 const init = (logger) => {
@@ -33,14 +34,32 @@ const init = (logger) => {
   app.use(middlewares.counterRequests(logger));
 
 
+  // LOGIN API
+  logger.info('Setting API Login route.');
+  app.post(
+    '/login',
+    middlewares.limitAmountOfRequest,
+    loginRoute
+  );
+
+
   // HEATLH (API STATUS)
   logger.info('Setting API health route.');
-  app.get('/health', middlewares.limitAmountOfRequest, middlewares.health);
+  app.get(
+    '/health',
+    middlewares.limitAmountOfRequest,
+    middlewares.authenticateJWT,
+    middlewares.health
+  );
 
 
-  // ROUTES FOR PATIENTS
+  // ROUTES FOR USERS
   logger.info('Setting API routes.');
-  app.use('/api/v1', routes);
+  app.use(
+    '/api/v1',
+    middlewares.authenticateJWT,
+    routes
+  );
 
 
   // HANDLE UNKNOW ROUTES

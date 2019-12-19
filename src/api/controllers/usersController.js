@@ -1,4 +1,5 @@
 const Users = require('../models/users');
+const helper = require('../../../utils/helpers');
 
 const users = {
   // GET ALL USERS
@@ -17,7 +18,11 @@ const users = {
   // ADD A NEW USERS
   add: async (data) => {
     const { username, password, email } = data;
-    const patient = new Users({ username, password, email});
+    const patient = new Users({
+      username,
+      password: await helper.hashPassword(password),
+      email
+    });
     const result = await patient.save();
     return result;
   },

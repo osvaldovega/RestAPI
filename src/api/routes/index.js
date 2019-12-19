@@ -11,7 +11,7 @@ router.get('/:resource', async (req, res) => {
     res.status(200).json(data);
   }
   catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
@@ -24,7 +24,7 @@ router.post('/:resource', async (req, res) => {
     res.status(200).json(data);
   }
   catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
@@ -36,7 +36,7 @@ router.get('/:resource/:id', async (req, res) => {
     res.status(200).json(data);
   }
   catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
@@ -48,7 +48,7 @@ router.patch('/:resource/:id', async (req, res) => {
     res.status(200).json(data);
   }
   catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
@@ -60,7 +60,7 @@ router.delete('/:resource/:id', async (req, res) => {
     res.status(200).json(data);
   }
   catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
