@@ -1,5 +1,5 @@
 {
-  "name": "Lindera",
+  "name": "ovegaAPI",
   "version": "1.0.0",
   "description": "REST API for Lindera Patients",
   "main": "app.js",
@@ -12,7 +12,8 @@
   },
   "keywords": [
     "api",
-    "crud"
+    "crud",
+    "heroku"
   ],
   "author": {
     "name": "Osvaldo Vega",
@@ -43,5 +44,12 @@
     "eslint-plugin-import": "^2.18.2",
     "jest": "^24.9.0",
     "supertest": "^4.0.2"
+  },
+  "engines": {
+    "node": "13.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osvaldovega/RestAPI"
   }
 }
