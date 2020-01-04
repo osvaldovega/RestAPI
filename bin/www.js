@@ -1,21 +1,18 @@
 const dotenv = require('dotenv');
-const app = require('../app');
+const app = require('../src/app');
 
 dotenv.config();
 
-const setup = async () => {
+(async () => {
   const service = app();
   try {
     await service.setupLogger();
     await service.validateEnvironment();
     await service.setupMongoDB();
-    await service.setupExpress();
-    await service.createService();
-    await service.startService();
-  }
-  catch (error) {
+    await service.setupServerAPI();
+    // await service.createService();
+    // await service.startService();
+  } catch (error) {
     process.exit(1);
   }
-};
-
-setup();
+})();

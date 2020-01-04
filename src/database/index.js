@@ -13,7 +13,7 @@ const createDataBase = async (logger) => {
     DB_PORT,
     DB_SCHEMA,
     DB_TYPE,
-    DB_USER
+    DB_USER,
   } = process.env;
 
   // GET CONNECTION STRING
@@ -33,8 +33,8 @@ const createDataBase = async (logger) => {
       {
         useUnifiedTopology: true,
         useNewUrlParser: true,
-        useCreateIndex: true
-      }
+        useCreateIndex: true,
+      },
     );
 };
 
@@ -43,8 +43,7 @@ const init = async (logger) => {
     if (!database) await createDataBase(logger);
     logger.info('Connection to DB SUCCESSFUL');
     return database;
-  }
-  catch (error) {
+  } catch (error) {
     logger.error('Connection to DB FAIL');
     logger.error(error.message);
     throw new Error(error.message);
@@ -52,5 +51,5 @@ const init = async (logger) => {
 };
 
 module.exports = {
-  init
+  init,
 };

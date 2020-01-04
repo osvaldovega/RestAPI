@@ -6,11 +6,11 @@ Introduction
 
 This is a simple REST API application that use MongoDB as storage, for execute HTTP requests like.
 
-- GET - Get all the patients
-- GET - Get a specific patient using ID
-- POST - Add a new patient
-- DELETE - Remove a patient from the DB using the ID
-- UPDATE- Update patient data
+- GET - Get all the users
+- GET - Get a specific user using ID
+- POST - Add a new user
+- DELETE - Remove a user from the DB using the ID
+- UPDATE- Update user data
 
 #### Modules Used
 
@@ -39,15 +39,16 @@ NOTE: You have to options for mongoDB connection, the first one is install mongo
 The vairable for set this is DB_CONNECTION_TYPE and you can set "aws" for use mongoDB in AWS or "local" for a mongoDB installed locally
 
 ##### TODO
-* Make a function for data validation (patients)
+* Make a function for data validation (users)
 * Include more coverage for testing (WIP)
 
 #### Author
 
 * Osvaldo Vega
+* Silvia Mata
 
 #### License
 
 License
 
-Copyright (c) 2019 Osvaldo Vega - GPL 3.0
+Copyright (c) 2019 Osvaldo Vega, Silvia Mata - GPL 3.0

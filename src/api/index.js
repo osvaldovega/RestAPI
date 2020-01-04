@@ -1,83 +1,75 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const routes = require('./routes');
-const loginRoute = require('./routes/login');
+const Koa = require('koa');
+const cors = require('koa2-cors');
+const helmet = require('koa-helmet');
+const mask = require('koa-json-mask');
+const bodyParser = require('koa-bodyparser');
+// Middlewares
 const middlewares = require('./middlewares');
+// v1 route imports
+const v1Routes = require('./routes/v1');
+
 
 const init = (logger) => {
-  logger.info('Setting express API.');
-  const app = express();
+  // Set Koa server
+  logger.info('Setting Koa API.');
+  const app = new Koa();
 
-  // CONTENT SECURITY POLICY
+  // Set header with API response time
+  logger.info('Setting Middleware [Respose-TIme]');
+  app.use(middlewares.responseTime());
+
+  // HTTP header security
   logger.info('Setting API security policy.');
   app.use(helmet());
-  app.use(xss()); // data sanitazion against XSS attacks
-  app.use(mongoSanitize()); // data sanitazion against NoSQL injction attacks
 
+  // Error handler
+  logger.info('Setting Middleware [Error-Handler]');
+  app.use(middlewares.errorHandler());
 
-  // ALLOW CROSS DOMAIN
-  logger.info('Setting API cross domain.');
-  app.use(cors());
+  // Enable CORS for all users
+  logger.info('Setting CORS');
+  app.use(cors({
+    origin: '*',
+    allowMethods: ['GET', 'POST', 'DELETE', 'PATCH'],
+    allowHeaders: ['Content-Type', 'Accept'],
+    exposeHeaders: ['rest-api-count', 'rest-api-response-time'],
+  }));
 
+  // Set header with total objects returned
+  logger.info('Setting Middleware [Count]');
+  app.use(middlewares.count());
 
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(express.json({ limit: '10kb' })); // Body limit is 10
+  // Allow pretty print via pretty=true querystring
+  // Pretty printed json will NOT be cached
+  app.use(middlewares.prettyJSON({
+    pretty: true,
+    param: {
+      pretty: true,
+    },
+  }));
 
+  // Allow user to restrict the keys returned
+  logger.info('Setting Mask');
+  app.use(mask({ name: 'filter' }));
 
-  // MIDDLEWARE COUNTER OF REQUESTS
-  logger.info('Setting API middleware.');
-  app.use(middlewares.counterRequests(logger));
+  app.use(bodyParser());
 
-
-  // LOGIN API
-  logger.info('Setting API Login route.');
-  app.post(
-    '/login',
-    middlewares.limitAmountOfRequest,
-    loginRoute
-  );
-
-
-  // HEATLH (API STATUS)
-  logger.info('Setting API health route.');
-  app.get(
-    '/health',
-    middlewares.limitAmountOfRequest,
-    middlewares.authenticateJWT,
-    middlewares.health
-  );
-
-
-  // ROUTES FOR USERS
-  logger.info('Setting API routes.');
-  app.use(
-    '/api/v1',
-    middlewares.authenticateJWT,
-    routes
-  );
-
-
-  // HANDLE UNKNOW ROUTES
-  app.use('*', middlewares.undefinedRoutet);
-
-
-  app.set('port', process.env.PORT);
-  logger.info(`Express service running on port ${process.env.PORT}`);
+  // v1 routes
+  app.use(v1Routes.login.routes());
+  app.use(v1Routes.users.routes());
+  app.use(v1Routes.health.routes());
 
   if (!app) {
-    logger.error('Express service not set');
-    throw new Error('Express service not set');
+    logger.error('KOA server not set');
+    throw new Error('KOA server not set');
   }
 
-  logger.info('Express service Status UP.');
+  logger.info('KOA server set');
+
+  app.listen(3001);
   return app;
 };
 
 module.exports = {
-  init
+  init,
 };
