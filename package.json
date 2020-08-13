@@ -27,7 +27,7 @@
   "dependencies": {
     "@babel/plugin-transform-async-to-generator": "^7.7.4",
     "@koa/router": "^8.0.5",
-    "bcrypt": "^3.0.7",
+    "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "express-rate-limit": "^5.0.0",
     "jsonwebtoken": "^8.5.1",
